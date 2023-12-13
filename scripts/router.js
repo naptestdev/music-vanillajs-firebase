@@ -20,16 +20,6 @@ const routes = {
     requireAuth: false,
     notRequireAuth: true,
   },
-  "/playlist/:id": {
-    body: "./routes/review.html",
-    requireAuth: false,
-    notRequireAuth: false,
-  },
-  "/search": {
-    body: "./routes/search.html",
-    requireAuth: false,
-    notRequireAuth: false,
-  },
 };
 
 const isMatchRoute = (route, pathname) => {
