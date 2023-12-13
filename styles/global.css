@@ -1,0 +1,204 @@
+:root {
+  --background: #12181b;
+}
+
+body {
+  background: var(--background);
+  color: white;
+}
+
+.navbar form {
+  position: relative;
+}
+
+.navbar form input {
+  background: var(--background);
+  border: 1px solid #4b5563;
+  outline: none;
+  border-radius: 9999px;
+  padding: 10px 14px;
+  width: 200px;
+  color: white;
+}
+
+.navbar form button {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  outline: none;
+  background: none;
+  color: white;
+  display: flex;
+  justify-content: center;
+}
+
+.navbar-btn {
+  border: 1px solid white;
+  color: white;
+  text-decoration: none;
+  width: 35px;
+  height: 35px;
+  font-size: 20px;
+  border-radius: 9999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s;
+}
+
+.navbar-btn:hover {
+  color: #c62828;
+}
+
+#recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.music-card .img-container {
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%;
+  position: relative;
+}
+.music-card .img-container img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  filter: brightness(100%);
+  transition: 0.3s;
+}
+.music-card p {
+  margin-top: 4px;
+  font-size: 20px;
+  margin-bottom: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.music-card {
+  cursor: pointer;
+  background: #12181b;
+  transition: 0.3s;
+  padding: 10px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.music-card:hover {
+  background: #1b2428;
+}
+
+.music-card i {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 30px;
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.music-card:hover i {
+  opacity: 1;
+}
+
+.music-card i:hover {
+  color: red;
+}
+
+.music-card:hover .img-container img {
+  filter: brightness(50%);
+}
+
+.music-player {
+  height: 80px;
+  border-top: 1px solid #1f2937;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  padding: 10px 0;
+  background: var(--background);
+}
+
+.music-player button {
+  border: 1px solid white;
+  border-radius: 9999px;
+  height: 40px;
+  width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  color: white;
+  font-size: 30px;
+}
+
+.avatar-action {
+  position: relative;
+  cursor: pointer;
+}
+
+.avatar-action img {
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+}
+
+.popup {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  transition: 0.3s;
+  z-index: 2;
+  right: 0;
+  transform: translateY(-5px);
+  box-shadow: 0 0 10px gray;
+  border-radius: 6px;
+  overflow: hidden;
+  width: max-content;
+}
+
+.popup-left {
+  right: unset;
+  left: 0;
+}
+
+.popup .action-button {
+  cursor: pointer;
+  width: 100%;
+  text-wrap: nowrap;
+  border: none;
+  outline: none;
+  background: white;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: white;
+  transition: 0.3s;
+}
+
+.popup .action-button:hover {
+  background: #e8e8e8;
+}
+
+.popup .action-button i {
+  font-size: 14px !important;
+}
+.popup .action-button {
+  font-size: 14px !important;
+}
+
+.avatar-action:focus-within .popup {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}

@@ -1,0 +1,66 @@
+<link rel="stylesheet" href="./styles/auth.css" />
+
+<div class="account-box">
+  <h2><i class="bx bxl-spotify"></i> Register</h2>
+  <form>
+    <div class="user-box">
+      <input id="username" type="text" required placeholder="Username" />
+    </div>
+    <div class="user-box">
+      <input id="email" type="text" required placeholder="Email" />
+    </div>
+    <div class="user-box">
+      <input id="password" type="password" required placeholder="Password" />
+    </div>
+    <a class="account" href="#/login">Already have an account?</a>
+    <button type="submit">Create new account</button>
+  </form>
+</div>
+
+<script type="module">
+  import {
+    createUserWithEmailAndPassword,
+    updateProfile,
+    signOut,
+    sendEmailVerification,
+  } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-auth.js";
+  import { auth } from "./scripts/firebase.js";
+
+  const form = document.querySelector("form");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    document.querySelector("button").disabled = true;
+
+    const username = form.username.value.trim();
+    const email = form.email.value.trim();
+    const password = form.password.value;
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
+
+        await sendEmailVerification(user);
+
+        await updateProfile(auth.currentUser, {
+          displayName: username,
+        });
+
+        await signOut(auth);
+
+        alert("Please verify your email");
+
+        location.hash = "#/login";
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+        alert(errorCode);
+      })
+      .finally(() => {
+        document.querySelector("button").disabled = false;
+      });
+  });
+</script>

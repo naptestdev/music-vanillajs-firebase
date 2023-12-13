@@ -1,0 +1,58 @@
+<link rel="stylesheet" href="./styles/auth.css" />
+
+<div class="account-box">
+  <h2><i class="bx bxl-spotify"></i> Login</h2>
+  <form>
+    <div class="user-box">
+      <input id="email" type="text" name="" required="" placeholder="Email" />
+    </div>
+    <div class="user-box">
+      <input
+        id="password"
+        type="password"
+        name=""
+        required=""
+        placeholder="Password"
+      />
+    </div>
+    <a class="account" href="#/register">Don't have an account?</a>
+    <button type="submit">Login to your account</button>
+  </form>
+</div>
+
+<script type="module">
+  import {
+    signInWithEmailAndPassword,
+    signOut,
+  } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-auth.js";
+  import { auth } from "./scripts/firebase.js";
+
+  const form = document.querySelector("form");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    document.querySelector("button").disabled = true;
+
+    const email = form.email.value.trim();
+    const password = form.password.value;
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
+        if (!user.emailVerified) {
+          signOut(auth);
+          throw { code: "Email not verified", message: "" };
+        }
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+        alert(errorCode);
+      })
+      .finally(() => {
+        document.querySelector("button").disabled = false;
+      });
+  });
+</script>

@@ -1,0 +1,102 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: #bdbdbd;
+  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+}
+
+.account-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 95vw;
+  max-width: 500px;
+  padding: 80px;
+  transform: translate(-50%, -50%);
+  background: #2f2f33;
+  box-sizing: border-box;
+  box-shadow: 2px 2px 15px #00000023;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.account-box > * {
+  flex: 1;
+}
+
+.account-box h2 {
+  margin: 0 0 30px;
+  padding: 0;
+  font-size: 35px;
+  display: flex;
+  align-items: center;
+}
+
+.account-box h2 i {
+  font-size: 60px;
+  color: #23c249;
+}
+
+.account-box .user-box {
+  width: 100%;
+}
+
+.account-box .user-box input {
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 16px;
+  margin-bottom: 20px;
+  border: 2px solid #d1d5db;
+  border-radius: 9999px;
+  outline: none;
+  background: transparent;
+  transition: 0.3s;
+  background: white;
+  width: 100%;
+}
+
+.account-box .user-box input:focus {
+  border: 2px solid #23c249;
+}
+
+.account-box form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.account-box form button {
+  padding: 14px 20px;
+  background: #23c249;
+  color: white;
+  border-radius: 9999px;
+  font-size: 16px;
+  transition: 0.3s;
+  margin-top: 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.account {
+  text-decoration: none !important;
+  color: #23c249 !important;
+}
+
+.account:hover {
+  text-decoration: underline;
+}

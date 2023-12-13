@@ -1,0 +1,220 @@
+<nav
+  class="navbar navbar-expand-lg navbar-dark"
+  style="border-bottom: 1px solid #1f2937"
+>
+  <div class="container-sm">
+    <a class="navbar-brand" href="./#"
+      ><h3 style="color: white">Music Player</h3></a
+    >
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarToggler"
+      aria-controls="navbarToggler"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarToggler">
+      <div class="d-flex align-items-center gap-3 ms-auto flex-wrap">
+        <form
+          onsubmit="event.preventDefault(); location.href =  `./?q=${encodeURIComponent(event.target.q.value.trim())}#`"
+        >
+          <input
+            type="text"
+            placeholder="Search..."
+            value=""
+            name="q"
+            autocomplete="off"
+          />
+          <button type="submit">
+            <svg
+              stroke="currentColor"
+              fill="currentColor"
+              stroke-width="0"
+              viewBox="0 0 512 512"
+              class="fill-gray-400 w-5 h-5"
+              height="1em"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"
+              ></path>
+            </svg>
+          </button>
+        </form>
+        <div id="avatar-action-container"></div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container-sm" style="min-height: 100vh">
+  <h2 id="title" style="margin: 20px 0"></h2>
+  <div id="recommendation-grid"></div>
+</div>
+
+<div class="music-player" style="display: none; margin-top: 20px">
+  <div class="d-flex align-items-center container-sm">
+    <div style="flex: 1 1 0%">
+      <div class="d-flex align-items-center gap-3">
+        <img id="song-image" height="56" width="56" src="" alt="" />
+        <div>
+          <strong id="song-name"></strong>
+          <p style="margin-bottom: 0" id="song-artist"></p>
+        </div>
+      </div>
+    </div>
+    <div style="flex: 1 1 0%" class="d-flex justify-content-center">
+      <button id="play-btn"></button>
+    </div>
+    <div style="flex: 1 1 0%" class="flex-shrink-0"></div>
+  </div>
+  <audio id="song-player" src=""></audio>
+</div>
+
+<script type="module">
+  import { auth, db } from "./scripts/firebase.js";
+  import {
+    doc,
+    setDoc,
+    getDocs,
+    collection,
+  } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js";
+
+  const searchQuery = new URLSearchParams(location.search).get("q");
+  const isViewingMyPlaylist = +new URLSearchParams(location.search).get(
+    "isViewingMyPlaylist"
+  );
+
+  document.querySelector("#title").innerText = isViewingMyPlaylist
+    ? "My Playlist"
+    : searchQuery?.trim()
+    ? `Search result for: ${searchQuery.trim()}`
+    : "Recommendations";
+
+  fetch("https://accounts.spotify.com/api/token", {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${btoa(
+        `fea4cc8d6f3b4c02b39922b75a6bd658:780f84f2284d46199c677ade14a1a0d0`
+      )}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: "grant_type=client_credentials",
+  })
+    .then((res) => res.json())
+    .then((authData) => {
+      window.playSong = (id, name, artist, image) => {
+        fetch(`https://api.spotify.com/v1/tracks/${id}`, {
+          headers: {
+            authorization: `Bearer ${authData.access_token}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.preview_url) {
+              alert("No preview mp3 file was found");
+            } else {
+              document.querySelector("#song-name").innerText = name;
+              document.querySelector("#song-artist").innerText = artist;
+              document.querySelector("#song-image").src = image;
+              document.querySelector("#song-player").src = data.preview_url;
+              document.querySelector(".music-player").style.display = "flex";
+              document.querySelector("#song-player").play();
+              document.querySelector("#play-btn").innerHTML = `
+              <i class="bx bx-pause"></i>
+            `;
+            }
+          });
+      };
+
+      (async () => {
+        let tracks;
+
+        if (isViewingMyPlaylist) {
+          const querySnapshot = await getDocs(
+            collection(db, `playlist-${auth.currentUser.uid}`)
+          );
+          tracks = [];
+          querySnapshot.forEach((doc) => {
+            tracks.push(doc.data());
+          });
+        } else {
+          const res = await fetch(
+            searchQuery?.trim()
+              ? `https://api.spotify.com/v1/search?q=${encodeURIComponent(
+                  searchQuery
+                )}&type=track`
+              : "https://api.spotify.com/v1/recommendations?seed_artists=5dfZ5uSmzR7VQK0udbAVpf,1LEtM3AleYg1xabW6CRkpi,06HL4z0CvFAxyc27GXpf02,1uNFoZAHBGtllmzznpCI3s,5FWPIKz9czXWaiNtw45KQs",
+            {
+              headers: {
+                authorization: `Bearer ${authData.access_token}`,
+              },
+            }
+          );
+
+          const data = await res.json();
+
+          tracks = searchQuery?.trim() ? data.tracks.items : data.tracks;
+        }
+
+        window.addToPlaylist = (id) => {
+          const track = tracks.find((item) => item.id === id);
+          if (auth.currentUser) {
+            setDoc(doc(db, `playlist-${auth.currentUser.uid}`, id), track);
+            alert("Added to your playlist");
+          } else {
+            alert("Please login");
+          }
+        };
+
+        tracks.map((item) => {
+          item.name = item.name.replace("'", "");
+          document.querySelector("#recommendation-grid").innerHTML += /*html*/ `
+              <div class="music-card" onclick="window.playSong('${item.id}', '${
+            item.name
+          }', '${item.artists.map((artist) => artist.name)}', '${
+            item.album.images[0].url
+          }')">
+                <div class="img-container">
+                  <img
+                    src="${item.album.images[0].url}"
+                    alt=""
+                  />
+                </div>
+                <p>${item.name}</p>
+                
+                <i onclick="event.stopPropagation() ;window.addToPlaylist('${
+                  item.id
+                }')" data-bs-toggle="tooltip" data-bs-title="Add to my playlist" class='bx bx-heart'></i>
+              </div>
+            `;
+        });
+
+        const tooltipTriggerList = document.querySelectorAll(
+          '[data-bs-toggle="tooltip"]'
+        );
+        const tooltipList = [...tooltipTriggerList].map(
+          (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+        );
+      })();
+    });
+
+  document.querySelector("#play-btn").addEventListener("click", () => {
+    if (document.querySelector("#song-player").paused) {
+      document.querySelector("#play-btn").innerHTML = `
+        <i class="bx bx-pause"></i>
+      `;
+      document.querySelector("#song-player").play();
+    } else {
+      document.querySelector("#play-btn").innerHTML = `
+        <i class="bx bx-play"></i>
+      `;
+      document.querySelector("#song-player").pause();
+    }
+  });
+</script>
